@@ -1,1 +1,262 @@
+<!DOCTYPE html>
+<html>
 
+    <head>
+
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <!-- Nous chargeons les fichiers CDN de Leaflet. Le CSS AVANT le JS -->
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin="" />
+        <style type="text/css">
+            #map{ /* la carte DOIT avoir une hauteur sinon elle n'apparaît pas */
+                height:400px;
+            }
+            input:invalid ~ span:after {
+  content: '✖';
+  padding-left: 5px;
+  position: absolute;
+}
+
+input:valid ~ span:after {
+  content: '✓';
+  padding-left: 5px;
+  position: absolute
+}
+        </style>
+
+        <title>Carte</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+
+    </head>
+
+    <body>
+
+        <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+
+        <h1 class="title"> Welcome to Brewery Map </h1>
+        <h5 class="subtitle">Here are some random bars for you :</h5>
+        <p><div style="color: red">Tip: </div>click on a pin to see informations about this bar</p>
+        <a href="test_get.php?subject=PHP&web=W3schools.com">Test $GET</a>
+<?php
+echo 'Bonjour ' . htmlspecialchars($_GET["name"]) . '!';
+?>
+
+<!-- Search Bar -->
+  <!-- Zip Code search -->
+  <form>
+    <div>
+      <label for="mySearch">Search breweries by zip code :</label>
+      <input type="search" id="mySearch" name="zip"
+      placeholder="5 numbers" required
+      size="30" pattern="[0-9]{5}">
+      <button>Rechercher</button>
+      <span class="validity"></span>
+    </div>
+  </form>
+  <form>
+    <div>
+      <label for="mySearch">Search breweries by city :</label>
+      <input type="search" id="mySearch" name="city"
+      placeholder="Your Search" required
+      size="30">
+      <button>Rechercher</button>
+      <span class="validity"></span>
+    </div>
+  </form>
+  <form action="map.html" class="inline">
+    <button class="float-left submit-button" >Clear search</button>
+</form>
+  
+
+        <div id="map">
+        <!-- Ici s'affichera la carte -->
+        
+	</div>
+
+        <!-- Fichiers Javascript -->
+        <script src="https://unpkg.com/leaflet@1.3.1/dist/leaflet.js" integrity="sha512-/Nsx9X4HebavoBvEBuyp3I7od5tA0UzAxs+j83KgC8PU0kgB4XiK4Lfe4y4cgBtaRJQEIFCW+oC506aPT2L1zw==" crossorigin=""></script>
+        <script src="map.js"></script>
+    <script type="text/javascript">
+
+            // On initialise la latitude et la longitude de Paris (centre de la carte)
+            var lat = 34.7277523;
+            var lon = -86.5932014;
+            var macarte = null;
+            // Fonction d'initialisation de la carte
+            var villes = {
+	"Paris": { "lat": 48.852969, "lon": 2.349903 },
+	"Brest": { "lat": 48.383, "lon": -4.500 },
+	"Quimper": { "lat": 48.000, "lon": -4.100 },
+	"Bayonne": { "lat": 43.500, "lon": -1.467 }
+};
+            
+            function initMap() {
+                // Créer l'objet "macarte" et l'insèrer dans l'élément HTML qui a l'ID "map"
+                macarte = L.map('map').setView([lat, lon], 11);
+                var marker = L.marker([48.9180, 2.2934]).addTo(macarte);
+                for (ville in villes) {
+	            var marker = L.marker([villes[ville].lat, villes[ville].lon]).addTo(macarte);
+                marker.bindPopup(ville);
+                }  
+                // Leaflet ne récupère pas les cartes (tiles) sur un serveur par défaut. Nous devons lui préciser où nous souhaitons les récupérer. Ici, openstreetmap.fr
+                L.tileLayer('https://{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png', {
+                    // Il est toujours bien de laisser le lien vers la source des données
+                    attribution: 'données © <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+                    minZoom: 1,
+                    maxZoom: 20
+                }).addTo(macarte);
+            }
+            window.onload = function(){
+		// Fonction d'initialisation qui s'exécute lorsque le DOM est chargé
+		initMap(); 
+            };
+    // Requete
+var request = new XMLHttpRequest()
+
+// Ouverture connection
+
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+    return vars;
+}
+
+
+function getUrlParam(parameter, defaultvalue){
+    var urlparameter = defaultvalue;
+    if(window.location.href.indexOf(parameter) > -1){
+        urlparameter = getUrlVars()[parameter];
+        }
+    return urlparameter;
+}
+
+var zipcode = getUrlParam('zip','Empty');
+var search = getUrlParam('q','Empty');
+var mytext = getUrlParam('text','Empty');
+
+
+if(zipcode = 'Empty') {
+  if(search = 'Empty') {
+
+    request.open('GET', 'https://api.openbrewerydb.org/breweries?per_page=50', true)
+// https://api.openbrewerydb.org/breweries?page=15
+
+request.onload = function() {
+  // JSON
+  var data = JSON.parse(this.response)
+  console.log(data)
+
+
+ data.forEach(brewery => {
+     console.log(brewery.longitude)
+     console.log(brewery.latitude)
+     console.log(brewery.name)
+     console.log("------------------------------------")
+    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    marker.bindPopup(brewery.name);
+    })
+
+
+
+
+  //document.write(`<div class="card"><h3>Film : </h3><br><p class="soustitre">Titre : </p><p>${mobile.title}<p></div> <br>`)
+}
+
+  }
+
+  if(search != 'Empty') {
+    request.open('GET', `https://api.openbrewerydb.org/breweries/search?query=${search.replace(/ /g,"_")}`, true)
+// https://api.openbrewerydb.org/breweries?page=15
+
+request.onload = function() {
+  // JSON
+  var data = JSON.parse(this.response)
+  console.log(data)
+
+
+ data.forEach(brewery => {
+     console.log(brewery.longitude)
+     console.log(brewery.latitude)
+     console.log(brewery.name)
+     console.log("------------------------------------")
+    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    marker.bindPopup(brewery.name);
+    })
+
+
+
+
+  //document.write(`<div class="card"><h3>Film : </h3><br><p class="soustitre">Titre : </p><p>${mobile.title}<p></div> <br>`)
+}
+  }
+}
+var zipcode = getUrlParam('zip','Empty');
+
+if(zipcode != 'Empty') {
+  request.open('GET', `https://api.openbrewerydb.org/breweries?by_postal=${zipcode}`, true)
+// https://api.openbrewerydb.org/breweries?page=15
+
+request.onload = function() {
+  // JSON
+  var data = JSON.parse(this.response)
+  console.log(data)
+
+
+ data.forEach(brewery => {
+     console.log(brewery.longitude)
+     console.log(brewery.latitude)
+     console.log(brewery.name)
+     console.log("------------------------------------")
+    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    marker.bindPopup(brewery.name);
+    })
+
+
+
+
+  //document.write(`<div class="card"><h3>Film : </h3><br><p class="soustitre">Titre : </p><p>${mobile.title}<p></div> <br>`)
+}
+}
+var city = getUrlParam('city','Empty');
+
+if(city != 'Empty') {
+  request.open('GET', `https://api.openbrewerydb.org/breweries?by_city=${city}`, true)
+// https://api.openbrewerydb.org/breweries?page=15
+
+request.onload = function() {
+  // JSON
+  var data = JSON.parse(this.response)
+  console.log(data)
+
+
+ data.forEach(brewery => {
+     console.log(brewery.longitude)
+     console.log(brewery.latitude)
+     console.log(brewery.name)
+     console.log("------------------------------------")
+    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    marker.bindPopup(brewery.name);
+    })
+
+
+
+
+  //document.write(`<div class="card"><h3>Film : </h3><br><p class="soustitre">Titre : </p><p>${mobile.title}<p></div> <br>`)
+}
+}
+
+var zipcode = getUrlParam('zip','Empty');
+var city = getUrlParam('city','Empty');
+var search = getUrlParam('q','Empty');
+var mytext = getUrlParam('text','Empty');
+
+// requete
+request.send()
+document.write(`<p>Debug : ${zipcode} ${city} ${mytext}</p>`)
+        </script>
+    </body>
+</html>
