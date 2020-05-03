@@ -26,7 +26,7 @@ input:valid ~ span:after {
         </style>
 
         <title>Carte</title>
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
+        <link rel="stylesheet" href="node_modules/bulma/css/bulma.min.css">
 
     </head>
 
@@ -137,6 +137,15 @@ function getUrlParam(parameter, defaultvalue){
 var zipcode = getUrlParam('zip','Empty');
 var search = getUrlParam('q','Empty');
 var mytext = getUrlParam('text','Empty');
+var customIcon = L.icon({
+    iconUrl: 'images/beer48.png',
+    //shadowUrl: 'icon-shadow.png',
+    iconSize:     [48, 48], // taille de l'icone
+    //shadowSize:   [50, 64], // taille de l'ombre
+    iconAnchor:   [24, 48], // point de l'icone qui correspondra à la position du marker
+    //shadowAnchor: [32, 64],  // idem pour l'ombre
+    popupAnchor:  [-3, -76] // point depuis lequel la popup doit s'ouvrir relativement à l'iconAnchor
+});
 
 
 if(zipcode = 'Empty') {
@@ -156,7 +165,7 @@ request.onload = function() {
      console.log(brewery.latitude)
      console.log(brewery.name)
      console.log("------------------------------------")
-    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    var marker = L.marker([brewery.latitude, brewery.longitude], {icon: customIcon}).addTo(macarte);
     marker.bindPopup(brewery.name);
     })
 
@@ -183,7 +192,7 @@ request.onload = function() {
      console.log(brewery.latitude)
      console.log(brewery.name)
      console.log("------------------------------------")
-    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    var marker = L.marker([brewery.latitude, brewery.longitude], {icon: customIcon}).addTo(macarte);
     marker.bindPopup(brewery.name);
     })
 
@@ -211,7 +220,7 @@ request.onload = function() {
      console.log(brewery.latitude)
      console.log(brewery.name)
      console.log("------------------------------------")
-    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    var marker = L.marker([brewery.latitude, brewery.longitude], {icon: customIcon}).addTo(macarte);
     marker.bindPopup(brewery.name);
     })
 
@@ -238,7 +247,7 @@ request.onload = function() {
      console.log(brewery.latitude)
      console.log(brewery.name)
      console.log("------------------------------------")
-    var marker = L.marker([brewery.latitude, brewery.longitude]).addTo(macarte);
+    var marker = L.marker([brewery.latitude, brewery.longitude], {icon: customIcon}).addTo(macarte);
     marker.bindPopup(brewery.name);
     })
 
